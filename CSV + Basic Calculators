@@ -1,0 +1,66 @@
+import numpy as np
+from math import sqrt
+import pandas as pd
+from pandas import DataFrame
+
+def display_as_percentage(val):
+  return '{:.3f}%'.format(val)
+#Changeable, switch out with dif file paths
+
+csv_1 = input('What is the file path for company one? ')
+csv_2 = input('What is the file path for company two? ')
+
+#SAMPLE csv_1 = ('Microsoft Past Year.csv')
+#SAMPLE csv_2 = ('Amazon Past Year.csv')
+
+#Restructuring from dataframe to list
+returns_comp1 = pd.read_csv(csv_1, header = 0)
+returns_comp2 = pd.read_csv(csv_2, header = 0)
+close_comp1 = list(returns_comp1.Close)
+close_comp2 = list(returns_comp2.Close)
+
+stddev_comp1 = np.std(returns_comp1)
+stddev_comp2 = np.std(returns_comp2)
+
+#Calculate standard deviation
+def calculate_stddev(dataset):
+  variance = calculate_variance(dataset)
+
+  stddev = sqrt(variance)
+  print ('Standard Deviation: '+str(stddev))
+  return stddev
+#Calculate variance
+def calculate_variance(dataset):
+  mean = sum(dataset) / len(dataset)
+  numerator = 0
+  for data in dataset:
+    numerator += (data - mean) ** 2
+  variance = numerator / len(dataset)
+  print ('Variance: '+str(variance))
+  return variance
+
+stddev_comp1 = calculate_stddev(close_comp1)
+stddev_comp2 = calculate_stddev(close_comp2)
+
+print('The standard deviation of Company One is', display_as_percentage(stddev_comp1))
+print('The standard deviation of Company Two is', display_as_percentage(stddev_comp2))
+#Program currently works
+
+def calculate_correlation(list_x, list_y):
+  #Sum of all squared values
+  sum_x = sum(list_x)
+  sum_y = sum(list_y)
+  sum_x2 = sum([x ** 2 for x in list_x])
+  sum_y2 = sum([y ** 2 for y in list_y])
+  #Sum of the product of each respective element in each dataset 
+  sum_xy = sum([x * y for x, y in zip(list_x, list_y)])
+  #Number of entries
+  n = len(list_x)
+
+  #Calculate correlation coefficient
+  num = n * sum_xy - sum_x * sum_y
+  denom = sqrt((n * sum_x2 - sum_x ** 2) * (n * sum_y2 - sum_y ** 2))
+
+  return num / denom
+print('The correlation coefficient for these two companies: ',calculate_correlation(close_comp1,close_comp2))
+
